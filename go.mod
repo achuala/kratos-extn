@@ -1,4 +1,4 @@
-module achuala.in/kratos-extn
+module github.com/achuala/kratos-extn
 
 go 1.21.1
 
