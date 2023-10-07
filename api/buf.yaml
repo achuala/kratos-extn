@@ -1,0 +1,9 @@
+version: v1
+name: github.com/achuala/kratos-extn
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
+  enum_zero_value_suffix: _UNKNOWN
