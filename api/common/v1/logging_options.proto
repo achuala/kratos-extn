@@ -5,7 +5,7 @@ package common;
 import "google/protobuf/descriptor.proto";
 
 option go_package = "common/v1";
-option java_package = "common";
+option java_package = "com.github/achuala/kratos-extn/common";
 
 message Sensitive {
   oneof log_action {
