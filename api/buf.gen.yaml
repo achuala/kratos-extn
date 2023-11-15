@@ -4,6 +4,4 @@ managed:
       
 plugins:
   - plugin: go
-    out: pb
-  - plugin: buf.build/bufbuild/validate-go
-    out: pb
+    out: gen

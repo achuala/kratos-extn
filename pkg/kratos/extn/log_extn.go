@@ -3,13 +3,22 @@ package extn
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
+	v1 "github.com/achuala/kratos-extn/api/gen/common/v1"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
+
+type Redacter interface {
+	Redact() string
+}
 
 // Server is an server logging middleware.
 func Server(logger log.Logger) middleware.Middleware {
@@ -89,7 +98,13 @@ func Client(logger log.Logger) middleware.Middleware {
 
 // extractArgs returns the string of the req
 func extractArgs(req interface{}) string {
-	if stringer, ok := req.(fmt.Stringer); ok {
+	if protoMsg, ok := req.(proto.Message); ok {
+		clone := proto.Clone(protoMsg)
+		handleSenstiveData(clone.ProtoReflect())
+		return fmt.Sprintf("%+v", clone)
+	} else if redacter, ok := req.(Redacter); ok {
+		return redacter.Redact()
+	} else if stringer, ok := req.(fmt.Stringer); ok {
 		return stringer.String()
 	}
 	return fmt.Sprintf("%+v", req)
@@ -101,4 +116,63 @@ func extractError(err error) (log.Level, string) {
 		return log.LevelError, fmt.Sprintf("%+v", err)
 	}
 	return log.LevelInfo, ""
+}
+
+func handleSenstiveData(m protoreflect.Message) {
+	m.Range(func(fd protoreflect.FieldDescriptor, v protoreflect.Value) bool {
+		opts := fd.Options().(*descriptorpb.FieldOptions)
+
+		switch typed := v.Interface().(type) {
+		case protoreflect.Message:
+			handleSenstiveData(typed)
+		case protoreflect.Map:
+			typed.Range(func(key protoreflect.MapKey, value protoreflect.Value) bool {
+				if _, ok := value.Interface().(protoreflect.Message); ok {
+					handleSenstiveData(value.Message())
+				}
+				if _, ok := key.Interface().(protoreflect.Message); ok {
+					handleSenstiveData(key.Value().Message())
+				}
+				return true
+			})
+		case protoreflect.List:
+			for i := 0; i < typed.Len(); i++ {
+				if _, ok := typed.Get(i).Interface().(protoreflect.Message); ok {
+					handleSenstiveData(typed.Get(i).Message())
+				}
+			}
+		}
+
+		// Get extension from field
+		ext := proto.GetExtension(opts, v1.E_Sensitive)
+		// Check if equal to bool as expected
+		extVal, ok := ext.(*v1.Sensitive)
+		if !ok {
+			return true
+		}
+
+		// If true clear field and move on
+		if extVal != nil {
+			if extVal.GetRedact() {
+				m.Clear(fd)
+			} else if extVal.GetMask() {
+				maskedValue := maskString(v.String())
+				m.Set(fd, protoreflect.ValueOfString(maskedValue))
+			}
+		}
+
+		return true
+	})
+
+}
+
+func maskString(value string) string {
+	if len(value) <= 4 {
+		// If the string length is less than or equal to 4, just return "****" for masking.
+		return "****"
+	}
+
+	// Mask all characters except the last 4 with "*".
+	maskedValue := strings.Repeat("*", len(value)-4) + value[len(value)-4:]
+	return maskedValue
 }

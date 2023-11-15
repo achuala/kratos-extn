@@ -3,6 +3,7 @@ name: github.com/achuala/kratos-extn
 breaking:
   use:
     - FILE
+    - DEFAULT
 lint:
   use:
     - DEFAULT
