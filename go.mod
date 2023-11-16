@@ -4,7 +4,6 @@ go 1.21.4
 
 require (
 	github.com/go-kratos/kratos/v2 v2.7.1
-	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.4.0
 	go.opentelemetry.io/contrib/propagators/b3 v1.21.0
 	google.golang.org/protobuf v1.31.0
