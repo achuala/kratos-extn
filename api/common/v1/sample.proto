@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package common;
+package common.v1;
 
 
 import "google/protobuf/any.proto";
@@ -8,10 +8,9 @@ import "logging_options.proto";
 
 option go_package = "common/v1";
 
-
 // The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs.
 // Each `Status` message contains three pieces of data: error code, error message, and error details.
 message SensitiveTestData {
-    string name = 1 [(common.sensitive).mask = true];
-    string secret = 2 [(common.sensitive).redact = true];
+    string name = 1 [(common.v1.sensitive).mask = true];
+    string secret = 2 [(common.v1.sensitive).redact = true];
 }

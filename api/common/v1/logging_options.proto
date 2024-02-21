@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package common;
+package common.v1;
 
 import "google/protobuf/descriptor.proto";
 
 option go_package = "common/v1";
-option java_package = "com.github/achuala/kratos-extn/common";
+option java_package = "com.github/achuala/kratos-extn/api/common/v1";
 
 message Sensitive {
   oneof log_action {
