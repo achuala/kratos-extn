@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package common.v1;
+package options;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "common/v1";
-option java_package = "com.github/achuala/kratos-extn/api/common/v1";
+option go_package = "github.com/achuala/kratos-extn/api/options";
+option java_package = "com.github/achuala/kratos-extn/api/options";
 
 message Sensitive {
   oneof log_action {
@@ -27,4 +27,9 @@ extend google.protobuf.FieldOptions {
   // display by tools aware of this annotation. Note that that this has no effect on standard
   // Protobuf functions such as `TextFormat::PrintToString`.
   Sensitive sensitive = 50000;
+}
+
+message SensitiveTestData {
+  string name = 1 [(options.sensitive).mask = true];
+  string secret = 2 [(options.sensitive).redact = true];
 }
