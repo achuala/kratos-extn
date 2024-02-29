@@ -4,9 +4,6 @@ package options;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/achuala/kratos-extn/api/options";
-option java_package = "com.github/achuala/kratos-extn/api/options";
-
 message Sensitive {
   oneof log_action {
     // Indicates to clear the data while logging
