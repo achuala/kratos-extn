@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/achuala/kratos-extn/api/options"
+	pb "github.com/achuala/kratos-extn/api/gen"
 )
 
 func TestHandleSenstiveData(t *testing.T) {
-	val := &options.SensitiveTestData{Name: "Name to be Masked", Secret: "Secret"}
+	val := &pb.SensitiveTestData{Name: "Name to be Masked", Secret: "Secret"}
 	fmt.Printf("%v\n", val)
 	handleSenstiveData(val.ProtoReflect())
 	fmt.Printf("%v", val)

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	options "github.com/achuala/kratos-extn/api/options"
+	pb "github.com/achuala/kratos-extn/api/gen"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -144,9 +144,9 @@ func handleSenstiveData(m protoreflect.Message) {
 		}
 
 		// Get extension from field
-		ext := proto.GetExtension(opts, options.E_Sensitive)
+		ext := proto.GetExtension(opts, pb.E_Sensitive)
 		// Check if equal to bool as expected
-		extVal, ok := ext.(*options.Sensitive)
+		extVal, ok := ext.(*pb.Sensitive)
 		if !ok {
 			return true
 		}
